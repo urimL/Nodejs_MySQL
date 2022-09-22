@@ -109,24 +109,28 @@ var app = http.createServer(function(request,response){
       }
     } else if(pathname === '/create'){
         db.query(`SELECT * FROM topic`,function(error,topics) {
-        console.log(topics);
-        var title = 'Create';
-        var list = template.list(topics);
-        var html = template.HTML(title, list,
-          `<form action="/create_process" method="post">
-          <p><input type="text" name="title" placeholder="title"></p>
-          <p>
-            <textarea name="description" placeholder="description"></textarea>
-          </p>
-          <p>
-            <input type="submit">
-          </p>
-        </form>`,
-          `<a href="/create">create</a>`
-        );
-        response.writeHead(200);
-        response.end(html);
-      });
+          db.query(`SELECT * FROM author`, function(error, authors) {
+            var title = 'Create';
+            var list = template.list(topics);
+            var html = template.HTML(title, list,
+              `<form action="/create_process" method="post">
+                <p><input type="text" name="title" placeholder="title"></p>
+                <p>
+                  <textarea name="description" placeholder="description"></textarea>
+                </p>
+                <p>
+                  ${template.authorSelect(authors)}
+                </p>
+                <p>
+                  <input type="submit">
+                </p>
+              </form>`,
+              `<a href="/create">create</a>`
+            );
+            response.writeHead(200);
+            response.end(html);
+          });
+        });
     } else if(pathname === '/create_process'){
       var body = '';
       request.on('data', function(data){
@@ -142,7 +146,7 @@ var app = http.createServer(function(request,response){
           db.query(`
             insert into topic(title, description, created, author_id) 
             values (?,?,NOW(),?)`,
-            [post.title,post.description,1],
+            [post.title,post.description, post.author],
             function(error,result) {
               if(error) {
                 throw error;
