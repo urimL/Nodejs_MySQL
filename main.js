@@ -4,6 +4,7 @@ var qs = require('querystring');
 var template = require('./lib/template.js');
 
 var db = require('./lib/db');
+var topic = require('./lib/topic')
 
 
 var app = http.createServer(function(request,response){
@@ -11,64 +12,15 @@ var app = http.createServer(function(request,response){
     var queryData = url.parse(_url, true).query;
     var pathname = url.parse(_url, true).pathname;
     if(pathname === '/'){
-      if(queryData.id === undefined){
-        /*fs.readdir('./data', function(error, topics){
-          var title = 'Welcome';
-          var description = 'Hello, Node.js';
-          var list = template.list(topics);
-          var html = template.HTML(title, list,
-            `<h2>${title}</h2>${description}`,
-            `<a href="/create">create</a>`
-          );
-          response.writeHead(200);
-          response.end(html);
-        });*/
-        
+      if(queryData.id === undefined){        
         //mysql의 데이터를 main.js로 load해오는 방법
-        db.query(`SELECT * FROM topic`,function(error,topics) {
-          console.log(topics);
-          var title = 'Welcome';
-          var description = 'Hello, NodeJs';
-          var list = template.list(topics);
-          var html = template.HTML(title, list,
-            `<h2>${title}</h2>${description}`,
-            `<a href="/create">create</a>`
-          );
-          response.writeHead(200);
-          response.end(html);
-        });
+        topic.home(request, response);
         //배열의 객체로 여러가지 propery 값이 세팅되어 출력
 
       } 
       
       //상세보기
       else {
-        /*
-        fs.readdir('./data', function(error, topics){
-          var filteredId = path.parse(queryData.id).base;
-          fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
-            var title = queryData.id;
-            var sanitizedTitle = sanitizeHtml(title);
-            var sanitizedDescription = sanitizeHtml(description, {
-              allowedTags:['h1']
-            });
-            var list = template.list(topics);
-            var html = template.HTML(sanitizedTitle, list,
-              `<h2>${sanitizedTitle}</h2>${sanitizedDescription}`,
-              ` <a href="/create">create</a>
-                <a href="/update?id=${sanitizedTitle}">update</a>
-                <form action="delete_process" method="post">
-                  <input type="hidden" name="id" value="${sanitizedTitle}">
-                  <input type="submit" value="delete">
-                </form>`
-            );
-            response.writeHead(200);
-            response.end(html);
-          });
-        });
-        */
-
-
         //글 목록 가져오기
         db.query(`SELECT * FROM topic`, function(error,topics){
           if(error){
