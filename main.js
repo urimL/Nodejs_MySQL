@@ -5,6 +5,7 @@ var template = require('./lib/template.js');
 
 var db = require('./lib/db');
 var topic = require('./lib/topic')
+var author = require('./lib/author')
 
 var app = http.createServer(function (request, response) {
     var _url = request.url;
@@ -32,6 +33,10 @@ var app = http.createServer(function (request, response) {
         topic.update_proccess(request, response);
     } else if (pathname === '/delete_process') {
         topic.delete_proccess(request, response);
+    } else if (pathname === '/author') {
+        author.home(request, response);
+    } else if(pathname ==='/author/create_proccess'){
+        author.create_proccess(request,response);
     } else {
         response.writeHead(404);
         response.end('Not found');
